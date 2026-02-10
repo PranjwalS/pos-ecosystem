@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+
+# Env
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Expo / React Native
+.expo/
+dist/
+
+# IDE
+.vscode/*
+!.vscode/settings.json
