@@ -2,6 +2,6 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/health")
-def health():
+@app.get("/")
+def root():
     return {"status": "ok"}
