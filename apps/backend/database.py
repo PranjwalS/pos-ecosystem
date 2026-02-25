@@ -4,12 +4,11 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-DB_URL = os.getenv("SUPABASE_DB_URL")
-engine = create_engine(DB_URL)
+DB_URL = os.getenv("LOCAL_DB_URL")
+engine = create_engine(DB_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# Dependency for endpoints
 def get_db():
     db = SessionLocal()
     try:
