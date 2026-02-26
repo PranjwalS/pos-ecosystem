@@ -6,9 +6,18 @@ from models import User, Business, Product, Transaction, TransactionItem
 from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
 from auth import hash_password, create_access_token, decode_access_token, verify_password
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 class UserCreate(BaseModel):
     email:str
