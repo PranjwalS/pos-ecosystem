@@ -30,6 +30,12 @@ class UserLogin(BaseModel):
     email: str
     password: str
     
+    
+class BusinessCreate(BaseModel):
+    full_name: str
+    email:str
+    password:str
+
 
 class BusinessOut(BaseModel):
     name: str
@@ -115,3 +121,6 @@ def root(current_user: User = Depends(get_current_user)):
         for b in businesses
     ]
         
+@app.post("/create_business")
+def root(business: BusinessCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    pass
