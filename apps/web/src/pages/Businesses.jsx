@@ -63,8 +63,11 @@ export default function Businesses() {
               <div
                 style={{
                   ...styles.banner,
-                  backgroundImage: b.banner ? `url(${b.banner})` : "none",
-                  background: b.banner ? undefined : "linear-gradient(135deg, #161616 0%, #1e1e1e 100%)",
+                  backgroundImage: b.banner 
+                    ? `url(${b.banner})` 
+                    : "linear-gradient(135deg, #161616 0%, #1e1e1e 100%)",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
                 }}
               />
 
