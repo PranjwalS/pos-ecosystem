@@ -3,6 +3,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import UserPage from "./pages/UserPage";
+import Businesses from "./pages/Businesses";
 
 export default function App() {
   return (
@@ -11,7 +12,8 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/user" element={<UserPage />} />
+        <Route path="/:slug" element={<UserPage />} />
+        <Route path="/:slug/businesses" element={<Businesses />} />
       </Routes>
     </BrowserRouter>
   );
