@@ -13,6 +13,8 @@ class User(Base):
     email = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    full_name = Column(String, nullable=False)
+    slug = Column(String, unique=True, nullable=False)
 
     # Relationships
     businesses = relationship("Business", back_populates="owner", cascade="all, delete")
