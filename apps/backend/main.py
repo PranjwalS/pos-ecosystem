@@ -41,7 +41,7 @@ class BusinessCreate(BaseModel):
 class BusinessOut(BaseModel):
     name: str
     slug: str
-    description: str
+    description: str | None
     logo: str | None
     banner: str | None
     
@@ -125,6 +125,10 @@ def get_businesses(current_user: User = Depends(get_current_user)):
 def create_business(business: BusinessCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     
     businesses: List[Business] = current_user.businesses
+    names = [b.business_name for b in businesses]
+    if business.business_name in names:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Can't have duplicate names")
+    
     slugs = [b.slug for b in businesses]
     slug = "-".join(business.business_name.lower().split())
     index = 1
