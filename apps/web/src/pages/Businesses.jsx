@@ -38,10 +38,15 @@ export default function Businesses() {
       </nav>
 
       <main style={styles.main}>
-        <div style={styles.header}>
+      <div style={styles.header}>
+        <div>
           <p style={styles.tag}>Your portfolio</p>
           <h1 style={styles.title}>Businesses</h1>
         </div>
+        <button style={styles.addBtn} onClick={() => navigate(`/${slug}/businesses/add`)}>
+          + Add business
+        </button>
+      </div>
 
         {loading && <p style={styles.dim}>Loading...</p>}
         {error && <p style={styles.error}>{error}</p>}
@@ -131,7 +136,8 @@ const styles = {
     margin: "0 auto",
     padding: "3rem",
   },
-  header: { marginBottom: "2.5rem" },
+  header: { marginBottom: "2.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" },
+  addBtn: { background: "transparent", border: "1px solid #f0ede8", color: "#f0ede8", padding: "0.6rem 1.25rem", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.9rem" },
   tag: {
     fontSize: "0.75rem",
     letterSpacing: "0.2em",

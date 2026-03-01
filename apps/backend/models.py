@@ -31,6 +31,7 @@ class Business(Base):
     business_logo = Column(String)
     business_banner = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    slug = Column(String, nullable=False)
 
     # Relationships
     owner = relationship("User", back_populates="businesses")

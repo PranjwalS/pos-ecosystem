@@ -5,7 +5,7 @@ from typing import List
 from database import get_db, Base
 from models import User, Business, Product, Transaction, TransactionItem
 from sqlalchemy.exc import IntegrityError
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from auth import hash_password, create_access_token, decode_access_token, verify_password
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -32,9 +32,10 @@ class UserLogin(BaseModel):
     
     
 class BusinessCreate(BaseModel):
-    full_name: str
-    email:str
-    password:str
+    business_name: str
+    business_desc: str | None
+    business_logo: str | None
+    # business_banner: str | None
 
 
 class BusinessOut(BaseModel):
@@ -44,8 +45,7 @@ class BusinessOut(BaseModel):
     logo: str | None
     banner: str | None
     
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
     
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login") 
 
@@ -70,7 +70,7 @@ def root():
     return {"status":"ok"}
 
 @app.post("/create_user")
-def root(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
     print("PASSWORD:", repr(user.password))
     hashed_pw = hash_password(password=user.password)
     gen_slug = "-".join([name.lower() for name in user.full_name.split()])
@@ -90,7 +90,7 @@ def root(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @app.post("/login")
-def root(user: UserLogin, db: Session = Depends(get_db)):
+def approve_login(user: UserLogin, db: Session = Depends(get_db)):
     curr_user = db.query(User).filter(User.email == user.email).first()
     if not curr_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -103,17 +103,17 @@ def root(user: UserLogin, db: Session = Depends(get_db)):
 
 
 @app.get("/me")
-def root(current_user: User = Depends(get_current_user)):
+def get_me(current_user: User = Depends(get_current_user)):
     return {"email": current_user.email, "id": current_user.id, "slug": current_user.slug}
 
 
 @app.get("/businesses", response_model=List[BusinessOut])
-def root(current_user: User = Depends(get_current_user)):
+def get_businesses(current_user: User = Depends(get_current_user)):
     businesses: List[Business] = current_user.businesses
     return [
         BusinessOut(
             name=b.business_name,
-            slug=b.business_name.lower().replace(" ", "-"),
+            slug=b.slug,
             description=b.business_desc,
             logo=b.business_logo,
             banner=b.business_banner
@@ -122,5 +122,26 @@ def root(current_user: User = Depends(get_current_user)):
     ]
         
 @app.post("/create_business")
-def root(business: BusinessCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    pass
+def create_business(business: BusinessCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    
+    businesses: List[Business] = current_user.businesses
+    slugs = [b.slug for b in businesses]
+    slug = "-".join(business.business_name.lower().split())
+    index = 1
+    while (slug in slugs):
+        slug = f"{slug}-{index}"
+        index += 1
+        
+    new_business = Business(business_name=business.business_name, business_desc=business.business_desc, business_logo=business.business_logo, slug=slug)
+    current_user.businesses.append(new_business)
+    
+    try:
+        db.add(new_business)
+        db.commit()
+        db.refresh(new_business)
+    except Exception as e:
+        db.rollback()
+        print("ERROR:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    return {"status":"success", "slug":new_business.slug}
