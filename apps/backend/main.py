@@ -149,3 +149,49 @@ def create_business(business: BusinessCreate, current_user: User = Depends(get_c
         raise HTTPException(status_code=500, detail=str(e))
     
     return {"status":"success", "slug":new_business.slug}
+
+
+
+@app.get("/dashboard")
+def business_dashboard(business: BusinessOut, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    pass
+
+###business data to send ahead starter pack;;;
+# business_name, business_desc, business_logo, business_banner, slug
+# created_at — how long in business
+# total_products — count of all products
+# active_products — products with stock > 0
+# out_of_stock_products — count
+# Revenue
+# 6. total_revenue — all time sum of all transaction totals
+# 7. revenue_today — today only
+# 8. revenue_this_week
+# 9. revenue_this_month
+# 10. revenue_last_month — for comparison
+# 11. revenue_growth_pct — month over month % change
+# 12. average_order_value — total_revenue / total_transactionsTransactions
+# 13. total_transactions — all time count
+# 14. transactions_today
+# 15. transactions_this_week
+# 16. transactions_this_month
+# 17. busiest_hour — hour of day with most transactions (0-23)
+# 18. busiest_day_of_week — e.g. "Friday"
+# 19. average_items_per_transactionProducts
+# 20. top_products — list of top 5 by units sold: {name, slug, units_sold, revenue_generated, price}
+# 21. worst_products — bottom 5 by units sold
+# 22. most_revenue_product — single product generating most total revenue
+# 23. average_product_price — mean price across all products
+# 24. price_range — {min, max}
+# 25. most_expensive_product, cheapest_productML / Insights
+# 26. revenue_trend — list of last 30 days {date, revenue} for a chart
+# 27. transaction_trend — list of last 30 days {date, count}
+# 28. predicted_revenue_next_month — simple linear projection
+# 29. revenue_7day_moving_avg — smoothed revenue signal
+# 30. top_product_combo — most frequently bought together pair {product_a, product_b, frequency}Inventory / Health
+# 31. low_stock_products — products below threshold e.g. qty < 5: {name, stock}
+# 32. inventory_value — sum of (price × stock) across all products
+# 33. stock_turnover_rate — units sold / avg inventory (rough)Customer-ish (transaction-derived)
+# 34. repeat_transaction_days — days where more than 1 transaction happened (loyalty proxy)
+# 35. largest_single_transaction — max value transaction ever
+# 36. smallest_single_transaction — min value
+# 37. total_units_sold — all time across all transaction items
