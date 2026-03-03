@@ -4,7 +4,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import UserPage from "./pages/UserPage";
 import Businesses from "./pages/Businesses";
-import AddBusiness from "./pages/AddBusiness";
+import AddBusiness from "./pages/AddBusiness";         
+import Dashboard from "./pages/Dashboard";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/:slug" element={<UserPage />} />
         <Route path="/:slug/businesses" element={<Businesses />} />
         <Route path="/:slug/businesses/add" element={<AddBusiness />} />
+        <Route path="/:slug/businesses/:bizSlug" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   );
