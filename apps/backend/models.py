@@ -53,6 +53,7 @@ class Product(Base):
     keywords = Column(String)
     image_url = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    inventory = Column(Integer, default=0)
 
     # Optional uniqueness within business
     __table_args__ = (
