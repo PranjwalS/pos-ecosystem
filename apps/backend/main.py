@@ -61,9 +61,10 @@ def calculate_revenue(current_transactions):
     revenue_today = 0
     revenue_week = 0
     revenue_month = 0
+    today = date.today()
+
     revenue_mom = {f"{calendar.month_abbr[i]} {today.year}": 0 for i in range(1, today.month + 1)}
     
-    today = date.today()
     start_of_week = today - timedelta(days=today.weekday()) 
     start_of_month = today.replace(day=1) 
         
@@ -192,6 +193,23 @@ def create_business(business: BusinessCreate, current_user: User = Depends(get_c
 
 
 ### JUST GOTTA CLEAN UP ORDERING AND FIX THE RETURNS
+## also see more data for graphs, and machine learning models to tell what products to stock more of, and any scraping to recommend products
+
+# Percent change vs last week
+
+# Percent change vs last month
+
+# Revenue growth rate
+
+# Fastest growing product (velocity change)
+
+# Velocity at which low stock products will run out based on history
+
+# Price optimization suggestion
+
+# Current product recommendation (to stock more)
+
+# New prodcut recommendation (from similar businesses, what product could be added)
 
 @app.get("/{slug}/dashboard")
 # def business_dashboard(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -214,7 +232,7 @@ def business_dashboard(slug: str, db: Session = Depends(get_db)):
     active_products = [active_prd for active_prd in current_products if active_prd.inventory > 0]
     out_of_stock_products = [out_prd for out_prd in current_products if out_prd.inventory <= 0]
     
-    total_revenue, revenue_today, revenue_week, revenue_month = calculate_revenue(current_transactions)
+    total_revenue, revenue_today, revenue_week, revenue_month, revenue_mom = calculate_revenue(current_transactions)
     
     total_transactions = len(current_transactions)
     average_order_value = total_revenue / total_transactions
