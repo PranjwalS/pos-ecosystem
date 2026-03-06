@@ -15,7 +15,24 @@ def aggregate_product_stats(products, total_units_sold):
 
     most_expensive_product = max(products, key=lambda p: p.price) if products else None
     cheapest_product = min(products, key=lambda p: p.price) if products else None
+   
+   ### the below just for now until orm setup
+    most_expensive_product = {
+        "title": most_expensive_product.title,
+        "units_sold": 0,
+        "revenue_generated": 0.0,
+        "current_price": most_expensive_product.price
+    } if most_expensive_product else None
 
+    cheapest_product = {
+        "title": cheapest_product.title,
+        "units_sold": 0,
+        "revenue_generated": 0.0,
+        "current_price": cheapest_product.price
+    } if cheapest_product else None
+    
+    
+    
     inventory_value = 0
     for p in products:
         inventory_value += p.price * p.inventory

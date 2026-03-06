@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from typing import Dict, List, Optional
-from datetime import date
+from datetime import date, datetime
 
-from apps.backend.models import Product, TransactionItem
+from models import Product, TransactionItem
 
 
 class ProductSalesEntry(BaseModel):
@@ -40,7 +40,7 @@ class ProductCombo(BaseModel):
 
 class TransactionSummary(BaseModel):
     total_amount: float
-    created_at: date
+    created_at: datetime
 
 
 class RevenueMetrics(BaseModel):

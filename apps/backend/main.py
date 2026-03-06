@@ -7,11 +7,12 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import List
 from collections import Counter
-from apps.backend.dashboard.forecasting import aggregate_graph_and_patterns
-from apps.backend.dashboard.inventory import aggregate_product_stats
-from apps.backend.dashboard.products import aggregate_product_sales
-from apps.backend.dashboard.revenue import aggregate_revenue_data
-from apps.backend.schemes.dashboard_schema import BusinessDashboardResponse
+from dashboard.additional import calculate_additional_metrics
+from dashboard.forecasting import aggregate_graph_and_patterns
+from dashboard.inventory import aggregate_product_stats
+from dashboard.products import aggregate_product_sales
+from dashboard.revenue import aggregate_revenue_data
+from schemes.dashboard_schema import BusinessDashboardResponse
 from database import get_db, Base
 from models import User, Business, Product, Transaction, TransactionItem
 from sqlalchemy.exc import IntegrityError
@@ -199,7 +200,8 @@ def business_dashboard(slug: str, db: Session = Depends(get_db)):
     product_sales = aggregate_product_sales(current_transactions)
     product_stats = aggregate_product_stats(current_products, product_sales["total_units_sold"])
     graph_data = aggregate_graph_and_patterns(current_transactions)
-    
+    additional_metrics = calculate_additional_metrics(current_transactions, current_products)
+
     return {
         "business": {
             "business_name": current_business.business_name,
