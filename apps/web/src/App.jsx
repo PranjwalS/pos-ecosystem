@@ -17,7 +17,7 @@ export default function App() {
         <Route path="/:slug" element={<UserPage />} />
         <Route path="/:slug/businesses" element={<Businesses />} />
         <Route path="/:slug/businesses/add" element={<AddBusiness />} />
-        <Route path="/:slug/businesses/:bizSlug" element={<Dashboard />} />
+        <Route path="/:slug/:bizSlug/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   );

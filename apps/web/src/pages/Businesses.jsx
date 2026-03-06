@@ -60,7 +60,7 @@ export default function Businesses() {
             <div
               key={b.slug}
               style={styles.card}
-              onClick={() => navigate(`/${slug}/businesses/${b.slug}`)}
+              onClick={() => navigate(`/${slug}/${b.slug}/dashboard`)}
               onMouseEnter={e => e.currentTarget.style.borderColor = "#333"}
               onMouseLeave={e => e.currentTarget.style.borderColor = "#1a1a1a"}
             >
