@@ -176,9 +176,9 @@ def create_business(business: BusinessCreate, current_user: User = Depends(get_c
 # New prodcut recommendation (from similar businesses, what product could be added)
 
 @app.get("/{slug}/dashboard", response_model=BusinessDashboardResponse)
-# def business_dashboard(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-def business_dashboard(slug: str, db: Session = Depends(get_db)):
-    current_user = db.query(User).filter(User.email == "singh@gmail.com").first()
+def business_dashboard(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+# def business_dashboard(slug: str, db: Session = Depends(get_db)):
+    # current_user = db.query(User).filter(User.email == "singh@gmail.com").first()
     if not current_user:
         raise HTTPException(status_code=404, detail="Test user not found")
     
