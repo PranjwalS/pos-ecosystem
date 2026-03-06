@@ -2,7 +2,7 @@ from statistics import mean
 
 
 def aggregate_product_stats(products, total_units_sold):
-
+    total_products = len(products)
     prices = []
     inventories = []
 
@@ -34,6 +34,7 @@ def aggregate_product_stats(products, total_units_sold):
             })
 
     return {
+        "total_products": total_products,
         "average_product_price": average_product_price,
         "price_range": price_range,
         "most_expensive_product": most_expensive_product,

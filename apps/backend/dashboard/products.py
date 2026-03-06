@@ -1,32 +1,30 @@
-from typing import List
-
-from apps.backend.models import Product, TransactionItem
-
-
-
 def aggregate_product_sales(transactions):
-
+    
     total_units_sold = 0
     all_products = {}
 
     for t in transactions:
 
-        current_transaction: List[TransactionItem] = t.items
+        if not t or not t.items:
+            continue
 
-        for item in current_transaction:
+        for item in t.items:
 
-            current_product: Product = item.product
-
-            if not current_product:
+            if not item or not item.product:
                 continue
 
-            total_units_sold += item.quantity
+            product = item.product
 
-            if current_product.title not in all_products:
-                all_products[current_product.title] = [0, 0, current_product.price]
+            quantity = item.quantity or 0
+            price = item.price_at_time or 0
 
-            all_products[current_product.title][0] += item.quantity
-            all_products[current_product.title][1] += item.quantity * item.price_at_time
+            total_units_sold += quantity
+
+            if product.title not in all_products:
+                all_products[product.title] = [0, 0, product.price]
+
+            all_products[product.title][0] += quantity
+            all_products[product.title][1] += quantity * price
 
     top_products_list = sorted(all_products.items(), key=lambda x: x[1][0], reverse=True)[:5]
     bottom_products_list = sorted(all_products.items(), key=lambda x: x[1][0])[:5]
@@ -58,14 +56,17 @@ def aggregate_product_sales(transactions):
 
         index += 1
 
-    most_revenue_product_title, data = max(all_products.items(), key=lambda x: x[1][1])
+    if all_products:
+        most_revenue_product_title, data = max(all_products.items(), key=lambda x: x[1][1])
 
-    most_revenue_product = {
-        "title": most_revenue_product_title,
-        "revenue_generated": data[1],
-        "units_sold": data[0],
-        "current_price": data[2]
-    }
+        most_revenue_product = {
+            "title": most_revenue_product_title,
+            "revenue_generated": data[1],
+            "units_sold": data[0],
+            "current_price": data[2]
+        }
+    else:
+        most_revenue_product = None
 
     return {
         "all_products": all_products,

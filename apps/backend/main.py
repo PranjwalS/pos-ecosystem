@@ -11,6 +11,7 @@ from apps.backend.dashboard.forecasting import aggregate_graph_and_patterns
 from apps.backend.dashboard.inventory import aggregate_product_stats
 from apps.backend.dashboard.products import aggregate_product_sales
 from apps.backend.dashboard.revenue import aggregate_revenue_data
+from apps.backend.schemes.dashboard_schema import BusinessDashboardResponse
 from database import get_db, Base
 from models import User, Business, Product, Transaction, TransactionItem
 from sqlalchemy.exc import IntegrityError
@@ -165,14 +166,6 @@ def create_business(business: BusinessCreate, current_user: User = Depends(get_c
 ### JUST GOTTA CLEAN UP ORDERING AND FIX THE RETURNS
 ## also see more data for graphs, and machine learning models to tell what products to stock more of, and any scraping to recommend products
 
-# Percent change vs last week
-
-# Percent change vs last month
-
-# Revenue growth rate
-
-# Fastest growing product (velocity change)
-
 # Velocity at which low stock products will run out based on history
 
 # Price optimization suggestion
@@ -181,7 +174,7 @@ def create_business(business: BusinessCreate, current_user: User = Depends(get_c
 
 # New prodcut recommendation (from similar businesses, what product could be added)
 
-@app.get("/{slug}/dashboard")
+@app.get("/{slug}/dashboard", response_model=BusinessDashboardResponse)
 # def business_dashboard(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
 def business_dashboard(slug: str, db: Session = Depends(get_db)):
     current_user = db.query(User).filter(User.email == "singh@gmail.com").first()
@@ -196,20 +189,29 @@ def business_dashboard(slug: str, db: Session = Depends(get_db)):
     current_products: List[Product] = current_business.products
     current_transactions: List[Transaction] = current_business.transactions
     
-    business_created_at = current_business.created_at.date()
-    total_products = len(current_products)
-    active_products = [active_prd for active_prd in current_products if active_prd.inventory > 0]
-    out_of_stock_products = [out_prd for out_prd in current_products if out_prd.inventory <= 0]
+    ###### bring this back later
+    # transactions_today = [
+    #     t for t in current_transactions
+    #     if t.created_at and t.created_at.date() == date.today()
+    # ]
     
-    transactions_today = [transaction for transaction in current_transactions if transaction.created_at.date() == date.today()]
-
     revenue_data = aggregate_revenue_data(current_transactions)
     product_sales = aggregate_product_sales(current_transactions)
     product_stats = aggregate_product_stats(current_products, product_sales["total_units_sold"])
     graph_data = aggregate_graph_and_patterns(current_transactions)
     
-    return {"business_name": current_business.business_name,
+    return {
+        "business": {
+            "business_name": current_business.business_name,
             "business_desc": current_business.business_desc,
             "business_logo": current_business.business_logo,
             "business_banner": current_business.business_banner,
-            "slug": current_business.slug}
+            "slug": current_business.slug
+        },
+
+        "revenue_metrics": revenue_data,
+        "product_sales_metrics": product_sales,
+        "product_stats_metrics": product_stats,
+        "graph_metrics": graph_data,
+        "additional_metrics": additional_metrics,
+    }

@@ -1,8 +1,5 @@
 import calendar
 from datetime import date, timedelta
-from typing import List
-
-from apps.backend.models import Product, TransactionItem
 
 
 def aggregate_revenue_data(transactions):
@@ -23,30 +20,32 @@ def aggregate_revenue_data(transactions):
 
     for t in transactions:
 
-        if not t.created_at:
+        if not t or not t.created_at:
             continue
 
         tx_date = t.created_at.date()
-        total_revenue += t.total_amount
+        amount = t.total_amount or 0
+
+        total_revenue += amount
 
         if tx_date == today:
-            revenue_today += t.total_amount
+            revenue_today += amount
 
         if tx_date >= start_of_week:
-            revenue_week += t.total_amount
+            revenue_week += amount
 
         if tx_date >= start_of_month:
-            revenue_month += t.total_amount
+            revenue_month += amount
 
         if tx_date.year == today.year and tx_date.month <= today.month:
             month_label = f"{calendar.month_abbr[tx_date.month]} {tx_date.year}"
-            revenue_mom[month_label] += t.total_amount
+            revenue_mom[month_label] += amount
 
-        hourly_revenue[t.created_at.hour] += t.total_amount
-        weekday_revenue[t.created_at.weekday()] += t.total_amount
+        hourly_revenue[t.created_at.hour] += amount
+        weekday_revenue[t.created_at.weekday()] += amount
 
-    busiest_hour = max(hourly_revenue, key=hourly_revenue.get)
-    busiest_weekday = max(weekday_revenue, key=weekday_revenue.get)
+    busiest_hour = max(hourly_revenue, key=hourly_revenue.get) if hourly_revenue else None
+    busiest_weekday = max(weekday_revenue, key=weekday_revenue.get) if weekday_revenue else None
 
     total_transactions = len(transactions)
     average_revenue = total_revenue / total_transactions if total_transactions else 0
