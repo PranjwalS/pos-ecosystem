@@ -166,19 +166,12 @@ def create_business(business: BusinessCreate, current_user: User = Depends(get_c
 
 ### JUST GOTTA CLEAN UP ORDERING AND FIX THE RETURNS
 ## also see more data for graphs, and machine learning models to tell what products to stock more of, and any scraping to recommend products
-
 # Velocity at which low stock products will run out based on history
-
 # Price optimization suggestion
-
 # Current product recommendation (to stock more)
-
 # New prodcut recommendation (from similar businesses, what product could be added)
-
 @app.get("/{slug}/dashboard", response_model=BusinessDashboardResponse)
 def business_dashboard(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-# def business_dashboard(slug: str, db: Session = Depends(get_db)):
-    # current_user = db.query(User).filter(User.email == "singh@gmail.com").first()
     if not current_user:
         raise HTTPException(status_code=404, detail="Test user not found")
     
@@ -217,3 +210,19 @@ def business_dashboard(slug: str, current_user: User = Depends(get_current_user)
         "graph_metrics": graph_data,
         "additional_metrics": additional_metrics,
     }
+    
+
+
+@app.get("/{slug}/products")
+def get_products(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user:
+        raise HTTPException(status_code=404, detail="Test user not found")
+    
+    businesses: List[Business] = current_user.businesses
+    current_business = next((business for business in businesses if business.slug == slug), None)        
+    if not current_business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    current_products: List[Product] = current_business.products
+
+    
