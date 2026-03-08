@@ -6,6 +6,9 @@ import UserPage from "./pages/UserPage";
 import Businesses from "./pages/Businesses";
 import AddBusiness from "./pages/AddBusiness";         
 import Dashboard from "./pages/Dashboard";
+import Products from "./pages/Products";
+import CurrentProduct from "./pages/CurrentProduct";
+import AddProduct from "./pages/AddProduct";
 
 export default function App() {
   return (
@@ -18,6 +21,9 @@ export default function App() {
         <Route path="/:slug/businesses" element={<Businesses />} />
         <Route path="/:slug/businesses/add" element={<AddBusiness />} />
         <Route path="/:slug/:bizSlug/dashboard" element={<Dashboard />} />
+        <Route path="/:slug/:bizSlug/products" element={<Products />} />
+        <Route path="/:slug/:bizSlug/products/:productId" element={<CurrentProduct />} />
+        <Route path="/:slug/:bizSlug/add-product" element={<AddProduct />} />
       </Routes>
     </BrowserRouter>
   );

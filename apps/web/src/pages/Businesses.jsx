@@ -38,15 +38,10 @@ export default function Businesses() {
       </nav>
 
       <main style={styles.main}>
-      <div style={styles.header}>
-        <div>
+        <div style={styles.header}>
           <p style={styles.tag}>Your portfolio</p>
           <h1 style={styles.title}>Businesses</h1>
         </div>
-        <button style={styles.addBtn} onClick={() => navigate(`/${slug}/businesses/add`)}>
-          + Add business
-        </button>
-      </div>
 
         {loading && <p style={styles.dim}>Loading...</p>}
         {error && <p style={styles.error}>{error}</p>}
@@ -60,7 +55,7 @@ export default function Businesses() {
             <div
               key={b.slug}
               style={styles.card}
-              onClick={() => navigate(`/${slug}/${b.slug}/dashboard`)}
+              onClick={() => navigate(`/${slug}/businesses/${b.slug}`)}
               onMouseEnter={e => e.currentTarget.style.borderColor = "#333"}
               onMouseLeave={e => e.currentTarget.style.borderColor = "#1a1a1a"}
             >
@@ -68,11 +63,8 @@ export default function Businesses() {
               <div
                 style={{
                   ...styles.banner,
-                  backgroundImage: b.banner 
-                    ? `url(${b.banner})` 
-                    : "linear-gradient(135deg, #161616 0%, #1e1e1e 100%)",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  backgroundImage: b.banner ? `url(${b.banner})` : "none",
+                  background: b.banner ? undefined : "linear-gradient(135deg, #161616 0%, #1e1e1e 100%)",
                 }}
               />
 
@@ -92,7 +84,20 @@ export default function Businesses() {
                   {b.description && <p style={styles.desc}>{b.description}</p>}
                 </div>
 
-                <span style={styles.arrow}>→</span>
+                <div style={styles.actions}>
+                  <button
+                    style={styles.actionBtn}
+                    onClick={e => { e.stopPropagation(); navigate(`/${slug}/${b.slug}/dashboard`); }}
+                  >
+                    dashboard →
+                  </button>
+                  <button
+                    style={styles.actionBtn}
+                    onClick={e => { e.stopPropagation(); navigate(`/${slug}/${b.slug}/products`); }}
+                  >
+                    products →
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -136,8 +141,7 @@ const styles = {
     margin: "0 auto",
     padding: "3rem",
   },
-  header: { marginBottom: "2.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" },
-  addBtn: { background: "transparent", border: "1px solid #f0ede8", color: "#f0ede8", padding: "0.6rem 1.25rem", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.9rem" },
+  header: { marginBottom: "2.5rem" },
   tag: {
     fontSize: "0.75rem",
     letterSpacing: "0.2em",
@@ -208,7 +212,8 @@ const styles = {
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
-  arrow: { color: "#444", fontSize: "1.2rem", flexShrink: 0 },
+  actions:   { display: "flex", flexDirection: "column", gap: "0.4rem", flexShrink: 0 },
+  actionBtn: { background: "transparent", border: "1px solid #222", color: "#555", padding: "0.3rem 0.75rem", borderRadius: "4px", cursor: "pointer", fontFamily: "monospace", fontSize: "0.72rem", textAlign: "right", whiteSpace: "nowrap" },
   dim: { color: "#555", fontFamily: "monospace", fontSize: "0.9rem" },
   error: { color: "#e05c5c", fontSize: "0.9rem" },
 };
