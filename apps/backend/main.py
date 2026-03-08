@@ -1,11 +1,11 @@
 import calendar
 from itertools import combinations
 from statistics import mean
-
+from uuid import UUID
 from fastapi import FastAPI, Depends, Header, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from collections import Counter
 from dashboard.additional import calculate_additional_metrics
 from dashboard.forecasting import aggregate_graph_and_patterns
@@ -51,14 +51,49 @@ class BusinessCreate(BaseModel):
 
 
 class BusinessOut(BaseModel):
-    name: str
+    business_name: str
     slug: str
-    description: str | None
-    logo: str | None
-    banner: str | None
+    business_desc: str | None
+    business_logo: str | None
+    business_banner: str | None
     
     model_config = ConfigDict(from_attributes=True)
+
+class ProductCreate(BaseModel):
+    title: str
+    price: float
+    sku: Optional[str]
+    barcode_number: Optional[str]
+    description: Optional[str]
+    keywords: Optional[str]
+    image_url: Optional[str]
+    inventory: int
+
+class ProductUpdate(BaseModel):
+    title: str
+    price: float
+    description: Optional[str]
+    sku: Optional[str]
+    barcode_number: Optional[str]
+    keywords: Optional[str]
+    image_url: Optional[str]
+    inventory: int
+        
+class ProductOut(BaseModel):
+    id: UUID
+    title: str
+    price: float
+    sku: Optional[str]
+    barcode_number: Optional[str]
+    description: Optional[str]
+    keywords: Optional[str]
+    image_url: Optional[str]
+    inventory: int
+    created_at: datetime
     
+    model_config = ConfigDict(from_attributes=True)
+
+        
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login") 
 
 
@@ -121,16 +156,7 @@ def get_me(current_user: User = Depends(get_current_user)):
 @app.get("/businesses", response_model=List[BusinessOut])
 def get_businesses(current_user: User = Depends(get_current_user)):
     businesses: List[Business] = current_user.businesses
-    return [
-        BusinessOut(
-            name=b.business_name,
-            slug=b.slug,
-            description=b.business_desc,
-            logo=b.business_logo,
-            banner=b.business_banner
-        )
-        for b in businesses
-    ]
+    return businesses
         
 @app.post("/create_business")
 def create_business(business: BusinessCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -213,7 +239,7 @@ def business_dashboard(slug: str, current_user: User = Depends(get_current_user)
     
 
 
-@app.get("/{slug}/products")
+@app.get("/{slug}/products", response_model=List[ProductOut])
 def get_products(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not current_user:
         raise HTTPException(status_code=404, detail="Test user not found")
@@ -225,4 +251,94 @@ def get_products(slug: str, current_user: User = Depends(get_current_user), db: 
     
     current_products: List[Product] = current_business.products
 
+    return current_products
+
+
+
+@app.get("/{slug}/products/{product_id}", response_model=ProductOut)
+def get_product(slug: str, product_id: UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    businesses: List[Business] = current_user.businesses
+    current_business = next((b for b in businesses if b.slug == slug), None)
+    if not current_business:
+        raise HTTPException(status_code=404, detail="Business not found")
     
+    product = next((p for p in current_business.products if p.id == product_id), None)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return product
+
+
+
+
+@app.put("/{slug}/products/{product_id}")
+def edit_product(updated_product: ProductUpdate, product_id: UUID, db: Session = Depends(get_db)):
+    curr_product = db.query(Product).filter(Product.id == product_id).first()
+    if not curr_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    curr_product.title          = updated_product.title
+    curr_product.price          = updated_product.price
+    curr_product.description    = updated_product.description
+    curr_product.sku            = updated_product.sku
+    curr_product.barcode_number = updated_product.barcode_number
+    curr_product.keywords       = updated_product.keywords
+    curr_product.image_url      = updated_product.image_url
+    curr_product.inventory      = updated_product.inventory
+    
+    try:
+        db.commit()
+        db.refresh(curr_product)
+    except Exception as e:
+        db.rollback()
+        print("ERROR:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    return {"status":"success", "id": str(curr_product.id)}
+
+@app.delete("/{slug}/products/{product_id}")
+def edit_product(product_id: UUID, db: Session = Depends(get_db)):
+    curr_product = db.query(Product).filter(Product.id == product_id).first()
+    if not curr_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    try:
+        db.delete(curr_product)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print("ERROR:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    return {"status":"success"}
+
+
+@app.post("/{slug}/products")
+def add_product(new_product: ProductCreate, slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    print(new_product)
+    businesses: List[Business] = current_user.businesses
+    current_business = next((business for business in businesses if business.slug == slug), None)   
+    if not current_business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    curr_product = Product()
+    curr_product.title          = new_product.title
+    curr_product.price          = new_product.price
+    curr_product.description    = new_product.description
+    curr_product.sku            = new_product.sku
+    curr_product.barcode_number = new_product.barcode_number
+    curr_product.keywords       = new_product.keywords
+    curr_product.image_url      = new_product.image_url
+    curr_product.inventory      = new_product.inventory
+    curr_product.business_id    = current_business.id
+    
+    try:
+        db.add(curr_product)
+        db.commit()
+        db.refresh(curr_product)
+    except Exception as e:
+        db.rollback()
+        print("ERROR:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    return {"status":"success", "id": str(curr_product.id)}
