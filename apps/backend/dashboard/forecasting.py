@@ -1,11 +1,11 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from itertools import combinations
 from typing import Counter
 
 
 def aggregate_graph_and_patterns(transactions):
 
-    today = date.today()
+    today = datetime.now(timezone.utc).date()
     last_30_days = []
 
     for i in range(29, -1, -1):

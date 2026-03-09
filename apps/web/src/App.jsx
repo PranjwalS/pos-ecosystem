@@ -9,6 +9,10 @@ import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import CurrentProduct from "./pages/CurrentProduct";
 import AddProduct from "./pages/AddProduct";
+import MerchantProducts from "./pages/MerchantProducts";
+import MerchantProduct  from "./pages/MerchantProduct";
+import MerchantCheckout from "./pages/MerchantCheckout";
+
 
 export default function App() {
   return (
@@ -24,6 +28,9 @@ export default function App() {
         <Route path="/:slug/:bizSlug/products" element={<Products />} />
         <Route path="/:slug/:bizSlug/products/:productId" element={<CurrentProduct />} />
         <Route path="/:slug/:bizSlug/add-product" element={<AddProduct />} />
+        <Route path="/:slug/:bizSlug/merchant/products" element={<MerchantProducts />} />
+        <Route path="/:slug/:bizSlug/merchant/products/:productId" element={<MerchantProduct />} />
+        <Route path="/:slug/:bizSlug/merchant/checkout" element={<MerchantCheckout />} />
       </Routes>
     </BrowserRouter>
   );

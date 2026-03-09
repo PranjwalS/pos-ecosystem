@@ -1,5 +1,5 @@
 import calendar
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 
 def aggregate_revenue_data(transactions):
@@ -9,7 +9,7 @@ def aggregate_revenue_data(transactions):
     revenue_week = 0
     revenue_month = 0
 
-    today = date.today()
+    today = datetime.now(timezone.utc).date()
 
     revenue_mom = {f"{calendar.month_abbr[i]} {today.year}": 0 for i in range(1, today.month + 1)}
     hourly_revenue = {i: 0 for i in range(24)}

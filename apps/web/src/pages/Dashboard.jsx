@@ -25,10 +25,12 @@ export default function Dashboard() {
       try {
         const res = await window.fetch(`http://localhost:8000/${bizSlug}/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.detail || "Failed");
         setD(json);
+        console.log("revenue_trend", json.graph_metrics.revenue_trend);
       } catch (err) {
         setError(err.message);
       } finally {

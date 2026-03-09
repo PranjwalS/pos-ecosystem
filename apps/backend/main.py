@@ -93,7 +93,16 @@ class ProductOut(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
-        
+class TransactionItemCreate(BaseModel):
+    product_id: UUID
+    quantity: int
+    price_at_time: float
+    
+class TransactionCreate(BaseModel):
+    total_amount: float
+    items: List[TransactionItemCreate] 
+    
+     
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login") 
 
 
@@ -342,3 +351,55 @@ def add_product(new_product: ProductCreate, slug: str, current_user: User = Depe
         raise HTTPException(status_code=500, detail=str(e))
     
     return {"status":"success", "id": str(curr_product.id)}
+
+
+
+
+@app.post("/{slug}/create_transaction")
+def create_transaction(slug: str, transaction: TransactionCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    businesses: List[Business] = current_user.businesses
+    current_business = next((b for b in businesses if b.slug == slug), None)
+    if not current_business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    try:
+
+        new_transaction = Transaction(
+            business_id=current_business.id,
+            total_amount=transaction.total_amount
+        )
+
+        db.add(new_transaction)
+        db.flush() 
+
+        for item in transaction.items:
+            new_item = TransactionItem(
+                transaction_id=new_transaction.id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price_at_time=item.price_at_time
+            )
+
+            db.add(new_item)
+            product = db.query(Product).filter(Product.id == item.product_id).first()
+            product.inventory -= item.quantity
+
+        db.commit()
+
+    except Exception as e:
+        db.rollback()
+        print("ERROR", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return {
+        "status": "success",
+        "transaction_id": str(new_transaction.id)
+    }
+    
+    
+    
+############# GET /{slug}/transactions ALL TRANSACTIONS where clicking one shows GET /transactions/{id} with ability to GET /transactions/{id}/receipt generate reciepts
+
+
+
+

@@ -1,8 +1,8 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 
 def calculate_additional_metrics(transactions, products):
-    today = date.today()
+    today = datetime.now(timezone.utc).date()
     start_of_week = today - timedelta(days=7)
     start_of_last_week = today - timedelta(days=14)
     start_of_month = today.replace(day=1)
