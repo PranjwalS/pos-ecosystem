@@ -93,6 +93,12 @@ export default function Businesses() {
                   >
                     products →
                   </button>
+                  <button
+                    style={styles.actionBtn}
+                    onClick={e => { e.stopPropagation(); navigate(`/${slug}/${b.slug}/transactions`); }}
+                  >
+                    transactions →
+                  </button>
                 </div>
               </div>
             </div>
