@@ -411,7 +411,6 @@ def create_transaction(slug: str, transaction: TransactionCreate, current_user: 
     
     
     
-############# GET /{slug}/transactions ALL TRANSACTIONS where clicking one shows GET /transactions/{id} with ability to GET /transactions/{id}/receipt generate reciepts
 @app.get("/{slug}/transactions", response_model=List[TransactionOut])
 def get_transactions(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     businesses: List[Business] = current_user.businesses
@@ -442,3 +441,8 @@ def get_transactions(slug: str, current_user: User = Depends(get_current_user), 
         output.append(curr_transaction)
         
     return output
+
+
+
+
+### take a break from this for now
