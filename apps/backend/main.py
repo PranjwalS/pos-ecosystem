@@ -102,6 +102,19 @@ class TransactionCreate(BaseModel):
     total_amount: float
     items: List[TransactionItemCreate] 
     
+    
+class TransactionItemOut(BaseModel):
+    product_id: UUID
+    title: str
+    price_at_time: float
+    quantity: float
+    inventory: int
+    
+class TransactionOut(BaseModel):
+    total_amount: float
+    id: UUID
+    created_at: datetime
+    items: List[TransactionItemOut]
      
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login") 
 
@@ -399,7 +412,33 @@ def create_transaction(slug: str, transaction: TransactionCreate, current_user: 
     
     
 ############# GET /{slug}/transactions ALL TRANSACTIONS where clicking one shows GET /transactions/{id} with ability to GET /transactions/{id}/receipt generate reciepts
-
-
-
-
+@app.get("/{slug}/transactions", response_model=List[TransactionOut])
+def get_transactions(slug: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    businesses: List[Business] = current_user.businesses
+    current_business = next((b for b in businesses if b.slug == slug), None)
+    if not current_business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    
+    output = []
+    for transaction in current_business.transactions:
+        curr_transaction = TransactionOut(
+            id=transaction.id,
+            created_at=transaction.created_at,
+            total_amount=transaction.total_amount,
+            items=[]
+        )
+        for item in transaction.items:
+            product: Product = item.product
+            item_info = TransactionItemOut(
+                product_id=item.product_id,
+                title=product.title,
+                price_at_time=item.price_at_time,
+                quantity=item.quantity,
+                inventory=product.inventory
+            )
+            curr_transaction.items.append(item_info)
+            
+        output.append(curr_transaction)
+        
+    return output
