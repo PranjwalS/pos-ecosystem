@@ -12,6 +12,8 @@ import AddProduct from "./pages/AddProduct";
 import MerchantProducts from "./pages/MerchantProducts";
 import MerchantProduct  from "./pages/MerchantProduct";
 import MerchantCheckout from "./pages/MerchantCheckout";
+import Transactions from "./pages/Transactions";
+import TransactionDetail from "./pages/TransactionDetail";
 
 
 export default function App() {
@@ -30,7 +32,9 @@ export default function App() {
         <Route path="/:slug/:bizSlug/add-product" element={<AddProduct />} />
         <Route path="/:slug/:bizSlug/merchant/products" element={<MerchantProducts />} />
         <Route path="/:slug/:bizSlug/merchant/products/:productId" element={<MerchantProduct />} />
-        <Route path="/:slug/:bizSlug/merchant/checkout" element={<MerchantCheckout />} />
+        <Route path="/:slug/:bizSlug/merchant/checkout" element={<MerchantCheckout />} />        
+        <Route path="/:slug/:bizSlug/transactions" element={<Transactions />} />
+        <Route path="/:slug/:bizSlug/transactions/:transactionId" element={<TransactionDetail />} />
       </Routes>
     </BrowserRouter>
   );
