@@ -445,4 +445,21 @@ def get_transactions(slug: str, current_user: User = Depends(get_current_user), 
 
 
 
-### take a break from this for now
+### taking a break from this project for now, will do ble orders, drone orders, refine coverletter, 
+# apply jobs, AND finalize and publish mute. to play store, work on fba amazon, ig accnt and find new startup idea, 
+# and also work on speedreeding app, zeke book and leetcode terminal assistant
+
+
+
+## next in here are just (kinda in order);
+        ## notifactions/alerts emailing setup (also for coverletter project)
+        ## user & role management
+        ## data export and reporting (csvs)
+        ## mobile app dev (BIG AND HARD)
+        ## API integration for payments
+        ## Hardware integration for payments or barcode scanning, etc
+        ## Machine learning 
+        ## customer role, like normal user with account as buyer
+        ## customer-front for businesses buyers per business (BIG AND HARD)
+        ## COMPLETELY FIX UP THE UI OF EVERYTHING, CLEANER AND PROPER
+        
